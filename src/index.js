@@ -46,3 +46,7 @@ function broadcastState(roomId){
     if(s)s.emit('game:state',rooms.publicStateFor(room,p.playerId));
   }
 }
+httpServer.listen(PORT, () => {
+  console.log('Sunucu calisiyor port '+PORT);
+  initDb().then(()=>console.log('DB hazir')).catch(err=>console.error('DB yok (oyun yine calisir):',err.message));
+});
