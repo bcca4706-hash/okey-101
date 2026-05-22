@@ -1,248 +1,593 @@
 <!DOCTYPE html>
 <html lang="tr">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>101 Okey Online</title>
-<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
-<style>
-:root{--bg:#0a1612;--felt:#0f3d2e;--gold:#d4a843;--tile:#f4ede0;--txt:#e8e2d2;--panel:#13251d;--ok:#27ae60;--danger:#c0392b;}
-*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
-html,body{height:100%;overflow:hidden;}
-body{font-family:'Trebuchet MS',sans-serif;background:radial-gradient(ellipse at 50% 30%,var(--felt),var(--bg));color:var(--txt);display:flex;flex-direction:column;user-select:none;}
-.screen{display:none;flex-direction:column;height:100%;width:100%;}
-.screen.active{display:flex;}
-#lobby{justify-content:center;align-items:center;padding:24px;gap:18px;text-align:center;}
-.logo{font-size:48px;font-weight:900;color:var(--gold);text-shadow:0 3px 0 #5c4519;}
-.card{background:var(--panel);border:1px solid rgba(212,168,67,.25);border-radius:18px;padding:22px;width:100%;max-width:380px;}
-.field{margin-bottom:14px;text-align:left;}
-.field label{display:block;font-size:12px;text-transform:uppercase;color:var(--gold);margin-bottom:6px;}
-input{width:100%;padding:13px;border-radius:10px;border:1px solid rgba(255,255,255,.12);background:#0a1a14;color:var(--txt);font-size:16px;}
-.btn{width:100%;padding:14px;border:none;border-radius:11px;font-size:16px;font-weight:700;cursor:pointer;color:#10211a;margin-top:8px;}
-.btn-gold{background:linear-gradient(180deg,#e6c25c,#c79a2e);}
-.btn-green{background:linear-gradient(180deg,#3ddc84,#27ae60);}
-.btn-ghost{background:transparent;border:1px solid rgba(212,168,67,.4);color:var(--gold);}
-.btn-row{display:flex;gap:10px;}
-.stat{display:flex;justify-content:space-between;padding:8px 0;font-size:14px;border-bottom:1px dashed rgba(255,255,255,.08);}
-.stat b{color:var(--gold);}
-.hidden{display:none!important;}
-.topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;background:rgba(0,0,0,.25);}
-.topbar .chips{color:var(--gold);font-weight:700;}
-.leave{background:none;border:1px solid rgba(255,80,80,.4);color:#ff8a8a;border-radius:8px;padding:6px 10px;font-size:12px;}
-.table{flex:1;display:flex;flex-direction:column;justify-content:space-between;padding:8px;}
-.opponents{display:flex;justify-content:space-around;padding:6px 0;}
-.opp{display:flex;flex-direction:column;align-items:center;gap:3px;opacity:.85;}
-.opp.turn{transform:scale(1.12);}
-.opp .ava{width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#26543f,#0e2a20);border:2px solid rgba(212,168,67,.35);display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--gold);}
-.opp.turn .ava{border-color:var(--gold);box-shadow:0 0 14px var(--gold);}
-.opp .nm{font-size:11px;max-width:64px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.opp .cnt{font-size:10px;background:rgba(0,0,0,.4);padding:2px 7px;border-radius:8px;color:var(--gold);}
-.center{display:flex;justify-content:center;align-items:center;gap:18px;padding:8px 0;flex-wrap:wrap;}
-.pile{display:flex;flex-direction:column;align-items:center;gap:5px;}
-.pile .lbl{font-size:10px;text-transform:uppercase;color:var(--gold);}
-.stack{cursor:pointer;}
-.deck-back{width:46px;height:64px;border-radius:7px;background:repeating-linear-gradient(45deg,#1d4d3a,#1d4d3a 4px,#163d2e 4px,#163d2e 8px);border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--gold);}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>APK Çevirici Prototip</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* KÖK DEĞİŞKENLER VE GENEL STİLLER */
+        :root {
+            --bg-main: #070b12;
+            --bg-card: #0d1326;
+            --bg-nav: #0a0f1d;
+            --border-color: #1e293b;
+            --text-muted: #64748b;
+            --sky-blue: #38bdf8;
+            --emerald: #34d399;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: monospace;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: #d1d5db;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            max-width: 450px;
+            margin: 0 auto;
+            border-left: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            position: relative;
+        }
+
+        /* ÜST BAR */
+        header {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: var(--bg-nav);
+            border-bottom: 1px solid #111827;
+            position: sticky;
+            top: 0;
+            z-index: 50;
+        }
+
+        /* BRANDING AREA */
+        .brand-section {
+            padding: 16px;
+            background-color: rgba(13, 19, 38, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid #030712;
+        }
+
+        .logo-box {
+            width: 48px;
+            height: 48px;
+            background-color: #0ea5e9;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 15px rgba(14, 165, 233, 0.4);
+        }
+
+        /* SEKME BUTONLARI */
+        nav {
+            display: flex;
+            background-color: var(--bg-nav);
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 65px;
+            z-index: 40;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 12px 8px;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            text-align: center;
+            white-space: nowrap;
+            transition: all 0.2s;
+        }
+
+        .tab-btn.active {
+            color: var(--sky-blue);
+            border-bottom: 2px solid var(--sky-blue);
+        }
+
+        /* İÇERİK ALANLARI */
+        main {
+            padding: 16px;
+            flex: 1;
+            padding-bottom: 80px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .section-title {
+            font-size: 10px;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+            font-weight: bold;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 4px;
+            margin-bottom: 16px;
+            margin-top: 12px;
+        }
+
+        /* FORMLAR VE INPUTLAR */
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 11px;
+            color: #9ca3af;
+            margin-bottom: 6px;
+        }
+
+        .input-control {
+            width: 100%;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px;
+            color: white;
+            font-size: 13px;
+            outline: none;
+        }
+
+        .input-control:focus {
+            border-color: var(--sky-blue);
+        }
+
+        /* DOSYA VE REKLAM LİSTELERİ */
+        .upload-zone {
+            border: 2px dashed #334155;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            background-color: rgba(13, 19, 38, 0.3);
+            cursor: pointer;
+            margin-bottom: 16px;
+        }
+
+        .upload-zone i {
+            font-size: 28px;
+            color: #f59e0b;
+            margin-bottom: 8px;
+        }
+
+        .ad-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .ad-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .info-box {
+            background-color: rgba(14, 165, 233, 0.1);
+            border: 1px solid rgba(14, 165, 233, 0.2);
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 11px;
+            color: #7dd3fc;
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            line-height: 1.4;
+        }
+
+        /* PLATFORMLAR */
+        .platform-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .plat-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 12px 4px;
+            text-align: center;
+            cursor: pointer;
+            opacity: 0.5;
+        }
+
+        .plat-card.active {
+            opacity: 1;
+            border: 2px solid var(--sky-blue);
+        }
+
+        /* ÖZET TABLOSU */
+        .summary-box {
+            background-color: var(--bg-nav);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #111827;
+            font-size: 12px;
+        }
+
+        /* BUTONLAR */
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(to right, #0284c7, #2563eb);
+            color: white;
+            border: none;
+            padding: 14px;
+            border-radius: 12px;
+            font-weight: bold;
+            font-size: 13px;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.2);
+        }
+
+        .btn-warning {
+            color: #f59e0b;
+            background-color: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+            font-size: 11px;
+            padding: 8px;
+            text-align: center;
+            border-radius: 8px;
+            margin-top: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        /* ALT SEKMELER */
+        footer {
+            position: fixed;
+            bottom: 0;
+            max-width: 450px;
+            width: 100%;
+            background-color: var(--bg-nav);
+            border-top: 1px solid var(--border-color);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            padding: 8px 0;
+            z-index: 100;
+        }
+
+        .foot-btn {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            font-size: 9px;
+        }
+    </style>
 </head>
 <body>
-EOFcat >> public/index.html << 'EOF'
-<style>
-.tile{width:46px;height:64px;border-radius:7px;background:linear-gradient(155deg,#fbf6ea,#e6dcc6);border:1px solid #cdc3ad;box-shadow:inset 0 1px 0 #fff,0 3px 5px rgba(0,0,0,.35);display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:800;cursor:grab;}
-.tile .num{font-size:24px;line-height:1;}
-.tile .dot{width:7px;height:7px;border-radius:50%;margin-top:3px;}
-.tile.red{color:#c0392b;}.tile.red .dot{background:#c0392b;}
-.tile.yellow{color:#d49a16;}.tile.yellow .dot{background:#d49a16;}
-.tile.black{color:#2c2c2c;}.tile.black .dot{background:#2c2c2c;}
-.tile.blue{color:#21618c;}.tile.blue .dot{background:#21618c;}
-.tile.fake{color:var(--gold);background:linear-gradient(155deg,#2a3a30,#1a2820);border-color:var(--gold);}
-.tile.fake::after{content:'*';font-size:26px;}
-.tile.okeytile{box-shadow:0 0 10px var(--gold);}
-.tile.selected{transform:translateY(-12px);box-shadow:0 0 0 2px var(--gold);}
-.tile.small{width:36px;height:50px;}
-.tile.small .num{font-size:18px;}
-.rack-wrap{background:linear-gradient(180deg,#5a3d22,#3d2815);border-top:3px solid #6e4a29;padding:10px 8px 14px;}
-.rack-info{display:flex;justify-content:space-between;padding:0 4px 8px;font-size:12px;}
-.rack-info .okey-show{display:flex;align-items:center;gap:6px;color:var(--gold);}
-.rack{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;background:rgba(0,0,0,.18);border-radius:10px;padding:8px;min-height:148px;align-content:flex-start;}
-.tile.dragover{box-shadow:-3px 0 0 var(--gold);}
-.actions{display:flex;gap:8px;padding:10px 8px 0;}
-.actions .btn{flex:1;font-size:14px;padding:12px;margin-top:0;color:#fff;}
-.actions .btn:disabled{opacity:.35;}
-.act-draw{background:linear-gradient(180deg,#5a86c4,#3a6aa8);}
-.act-discard{background:linear-gradient(180deg,#e08a3c,#c46a1e);}
-.act-finish{background:linear-gradient(180deg,#3ddc84,#27ae60);color:#06180e;}
-.turn-banner{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(0,0,0,.78);color:var(--gold);padding:14px 28px;border-radius:14px;font-size:18px;font-weight:800;pointer-events:none;opacity:0;transition:opacity .3s;z-index:30;}
-.turn-banner.show{opacity:1;}
-#toast{position:absolute;top:64px;left:50%;transform:translateX(-50%);background:rgba(192,57,43,.95);color:#fff;padding:10px 18px;border-radius:10px;font-size:14px;opacity:0;transition:opacity .25s;z-index:40;max-width:90%;text-align:center;}
-#toast.show{opacity:1;}
-#over{position:absolute;inset:0;background:rgba(5,12,9,.92);z-index:50;display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:24px;}
-#over.show{display:flex;}
-#over h2{color:var(--gold);font-size:34px;}
-.score-list{width:100%;max-width:340px;}
-.score-row{display:flex;justify-content:space-between;padding:11px 14px;background:var(--panel);border-radius:9px;margin-bottom:7px;font-size:15px;}
-.score-row.win{border:1px solid var(--gold);color:var(--gold);}
-.pts.neg{color:var(--ok);}.pts.pos{color:#ff8a8a;}
-#waiting{position:absolute;inset:0;background:rgba(5,12,9,.85);z-index:45;display:none;flex-direction:column;align-items:center;justify-content:center;gap:18px;}
-#waiting.show{display:flex;}
-.spinner{width:54px;height:54px;border:5px solid rgba(212,168,67,.2);border-top-color:var(--gold);border-radius:50%;animation:spin 1s linear infinite;}
-@keyframes spin{to{transform:rotate(360deg);}}
-#game{position:relative;}
-</style>
-EOFcat >> public/index.html << 'EOF'
-<div id="lobby" class="screen active">
-  <div class="logo">101 OKEY</div>
-  <div class="card" id="loginCard">
-    <div class="field"><label>Oyuncu adin</label><input id="nameInput" placeholder="Adini yaz" maxlength="20"></div>
-    <div class="field"><label>Sunucu adresi</label><input id="serverInput" placeholder="https://..."></div>
-    <button class="btn btn-gold" id="loginBtn">Giris Yap</button>
-  </div>
-  <div class="card hidden" id="menuCard">
-    <div class="stat">Oyuncu <b id="meName">-</b></div>
-    <div class="stat">Chip <b id="meChips">-</b></div>
-    <div class="stat">Galibiyet <b id="meWins">-</b></div>
-    <div class="field" style="margin-top:14px"><label>Bahis</label><input id="betInput" type="number" value="100" min="10"></div>
-    <button class="btn btn-green" id="quickBtn">Hizli Eslesme</button>
-    <div class="btn-row"><button class="btn btn-ghost" id="createBtn">Oda Kur</button><button class="btn btn-ghost" id="joinBtn">Odaya Katil</button></div>
-    <button class="btn btn-ghost" id="boardBtn">Liderlik</button>
-  </div>
-</div>
-<div id="game" class="screen">
-  <div class="topbar"><span class="chips" id="gChips">0</span><span id="gRoom"></span><button class="leave" id="leaveBtn">Cik</button></div>
-  <div class="table">
-    <div class="opponents" id="opponents"></div>
-    <div class="center">
-      <div class="pile"><span class="lbl">Gosterge</span><div id="indicator"></div></div>
-      <div class="pile"><span class="lbl">Deste</span><div class="stack" id="drawPile"><div class="deck-back">?</div><span id="deckCount"></span></div></div>
-      <div class="pile"><span class="lbl">Atilan</span><div class="stack" id="discardPile"></div></div>
+
+    <header>
+        <span style="font-weight: bold; color: white; font-size: 14px;">APK çevirici</span>
+        <div style="display: flex; gap: 8px; font-size: 12px; color: #9ca3af;">
+            <span>14:58</span>
+            <i class="fa-solid fa-signal"></i>
+            <i class="fa-solid fa-battery-three-quarters" style="color: var(--emerald);"></i>
+        </div>
+    </header>
+
+    <div class="brand-section">
+        <div class="logo-box">
+            <i class="fa-solid fa-bolt" style="color: white; font-size: 20px;"></i>
+        </div>
+        <div>
+            <h1 style="font-size: 16px; font-weight: bold; color: var(--sky-blue); letter-spacing: 2px;">APK CONVERTER</h1>
+            <p style="font-size: 9px; color: var(--text-muted);">ANDROID & iOS BUILD TOOL</p>
+        </div>
     </div>
-    <div></div>
-    <div class="turn-banner" id="turnBanner"></div>
-  </div>
-  <div class="rack-wrap">
-    <div class="rack-info"><span>Elin: <b id="handCount">0</b></span><span class="okey-show">Okey: <span id="okeyShow"></span></span></div>
-    <div class="rack" id="rack"></div>
-    <div class="actions">
-      <button class="btn act-draw" id="drawBtn">Tas Cek</button>
-      <button class="btn act-discard" id="discardBtn" disabled>Tas At</button>
-      <button class="btn act-finish" id="finishBtn" disabled>Bitir</button>
-    </div>
-  </div>
-  <div id="waiting"><div class="spinner"></div><div>Rakip bekleniyor...</div></div>
-  <div id="over"><h2 id="overTitle">El Bitti</h2><div class="score-list" id="scoreList"></div><button class="btn btn-gold" id="backLobby" style="max-width:340px">Lobiye Don</button></div>
-  <div id="toast"></div>
-</div>
-EOFcat >> public/index.html << 'EOF'
-<script>
-const $=id=>document.getElementById(id);
-let socket=null,me=null,state=null,roomId=null,selectedTileId=null,server='',savedId=null;
-$('loginBtn').onclick=async()=>{
-  const name=$('nameInput').value.trim()||'Oyuncu';
-  server=$('serverInput').value.trim().replace(/\/$/,'');
-  if(!server){toast('Sunucu adresi gir');return;}
-  try{
-    const r=await fetch(server+'/auth/guest',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,id:savedId})});
-    if(!r.ok)throw new Error('Giris basarisiz');
-    const data=await r.json(); me=data.player; savedId=me.id;
-    showMenu(); connectSocket(data.token);
-  }catch(e){toast('Baglanamadi: '+e.message);}
-};
-function showMenu(){
-  $('loginCard').classList.add('hidden'); $('menuCard').classList.remove('hidden');
-  $('meName').textContent=me.name; $('meChips').textContent=me.chips; $('meWins').textContent=me.games_won??0;
-}
-function connectSocket(token){
-  socket=io(server,{auth:{token}});
-  socket.on('connect_error',e=>toast('Baglanti hatasi: '+e.message));
-  socket.on('error:msg',m=>toast(m));
-  socket.on('matchmaking:waiting',({queueSize})=>{gotoGame();$('waiting').classList.add('show');$('waiting').querySelector('div:last-child').textContent='Rakip bekleniyor... ('+queueSize+'/4)';});
-  socket.on('room:created',({roomId:rid})=>{roomId=rid;gotoGame();$('waiting').classList.add('show');$('waiting').querySelector('div:last-child').textContent='Oda kodu: '+rid;});
-  socket.on('room:update',({players})=>{$('waiting').querySelector('div:last-child').textContent='Oyuncular: '+players.length+'/4';});
-  socket.on('game:state',s=>{state=s;roomId=s.roomId;$('waiting').classList.remove('show');render();});
-  socket.on('game:over',d=>showOver(d.winner,d.pot,d.scores,d.finishedByOkey,d.finishedFromHand));
-}
-$('quickBtn').onclick=()=>socket.emit('matchmaking:join',{bet:+$('betInput').value||100});
-$('createBtn').onclick=()=>socket.emit('room:create',{bet:+$('betInput').value||100});
-$('joinBtn').onclick=()=>{const rid=prompt('Oda kodu:');if(rid){roomId=rid;socket.emit('room:join',{roomId:rid});gotoGame();$('waiting').classList.add('show');}};
-$('boardBtn').onclick=async()=>{try{const r=await fetch(server+'/leaderboard');const list=await r.json();alert('LIDERLIK\n\n'+list.map((p,i)=>(i+1)+'. '+p.name+' - '+p.chips).join('\n'));}catch{toast('Tablo alinamadi');}};
-function gotoGame(){$('lobby').classList.remove('active');$('game').classList.add('active');}
-$('leaveBtn').onclick=$('backLobby').onclick=()=>{$('over').classList.remove('show');$('game').classList.remove('active');$('lobby').classList.add('active');$('loginCard').classList.add('hidden');$('menuCard').classList.remove('hidden');state=null;roomId=null;selectedTileId=null;};
-function myTurn(){return state&&state.turn===me.id;}
-function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);}
-function banner(txt){const b=$('turnBanner');b.textContent=txt;b.classList.add('show');clearTimeout(b._t);b._t=setTimeout(()=>b.classList.remove('show'),1400);}
-</script>
-EOFcat >> public/index.html << 'EOF'
-<script>
-$('drawBtn').onclick=()=>{if(!myTurn()||state.phase!=='draw'){toast('Sira sende degil');return;}socket.emit('game:draw',{roomId,from:'pile'});};
-$('drawPile').onclick=()=>{if(myTurn()&&state.phase==='draw')socket.emit('game:draw',{roomId,from:'pile'});};
-$('discardPile').onclick=()=>{if(myTurn()&&state.phase==='draw')socket.emit('game:draw',{roomId,from:'discard'});};
-$('discardBtn').onclick=()=>{if(!selectedTileId){toast('Atilacak tasi sec');return;}if(!myTurn()||state.phase!=='discard'){toast('Once tas cek');return;}socket.emit('game:discard',{roomId,tileId:selectedTileId});selectedTileId=null;};
-$('finishBtn').onclick=()=>openFinish();
-function tileEl(t,small,selectable){
-  const d=document.createElement('div'); d.className='tile'+(small?' small':'');
-  if(t.fake){d.classList.add('fake');}
-  else{d.classList.add(t.color);const ok=state&&state.okey&&t.color===state.okey.color&&t.num===state.okey.num;if(ok)d.classList.add('okeytile');d.innerHTML='<span class="num">'+t.num+'</span><span class="dot"></span>';}
-  d.dataset.id=t.id;
-  if(selectable){
-    d.onclick=()=>{if(!myTurn()){toast('Sira sende degil');return;}document.querySelectorAll('.rack .tile.selected').forEach(x=>x.classList.remove('selected'));if(selectedTileId===t.id){selectedTileId=null;}else{selectedTileId=t.id;d.classList.add('selected');}};
-    enableDrag(d,t);
-  }
-  return d;
-}
-function render(){
-  if(!state)return;
-  $('gChips').textContent=me.chips??0; $('gRoom').textContent='Oda '+(state.roomId||'').slice(0,6);
-  $('indicator').innerHTML=''; if(state.indicator)$('indicator').appendChild(tileEl(state.indicator,true,false));
-  $('okeyShow').innerHTML=''; if(state.okey)$('okeyShow').appendChild(tileEl({...state.okey,id:'ok'},true,false));
-  $('deckCount').textContent=state.drawPileCount;
-  const mi=state.players.findIndex(p=>p.playerId===me.id);
-  const li=(mi-1+state.players.length)%state.players.length;
-  const leftId=state.players[li]?.playerId;
-  const ld=(state.discardPiles[leftId]||[]).slice(-1)[0];
-  $('discardPile').innerHTML=''; if(ld)$('discardPile').appendChild(tileEl(ld,true,false));else $('discardPile').innerHTML='<div class="deck-back" style="opacity:.3">-</div>';
-  const opp=$('opponents'); opp.innerHTML='';
-  state.players.forEach(p=>{if(p.playerId===me.id)return;const d=document.createElement('div');d.className='opp'+(state.turn===p.playerId?' turn':'');d.innerHTML='<div class="ava">'+(p.name||'?')[0].toUpperCase()+'</div><div class="nm">'+p.name+'</div><div class="cnt">'+p.tileCount+'</div>';opp.appendChild(d);});
-  const rack=$('rack'); rack.innerHTML='';
-  (state.myHand||[]).forEach(t=>rack.appendChild(tileEl(t,false,true)));
-  $('handCount').textContent=(state.myHand||[]).length;
-  const turn=myTurn();
-  $('drawBtn').disabled=!(turn&&state.phase==='draw');
-  $('discardBtn').disabled=!(turn&&state.phase==='discard');
-  $('finishBtn').disabled=!(turn&&state.phase==='discard');
-  if(turn)banner(state.phase==='draw'?'Sira sende - tas cek':'Tas at veya bitir');
-}
-function openFinish(){
-  if(!myTurn()||state.phase!=='discard'){toast('Once tas cek');return;}
-  const hand=state.myHand;
-  const guide=hand.map((t,i)=>i+':'+(t.fake?'*':t.num+t.color[0])).join(' ');
-  const inp=prompt('Perleri grupla. Per icindeki tas sira numaralarini virgulle, perler arasi | ile ayir.\nOrnek: 0,1,2 | 5,6,7\n\nElin:\n'+guide);
-  if(!inp)return;
-  const sets=inp.split('|').map(g=>g.trim().split(',').map(i=>hand[+i.trim()]).filter(Boolean)).filter(g=>g.length);
-  const used=new Set(sets.flat().map(t=>t.id));
-  const discard=hand.find(t=>!used.has(t.id));
-  socket.emit('game:finish',{roomId,sets,discardTileId:discard?.id});
-}
-let dragId=null;
-function enableDrag(el,t){
-  el.draggable=true;
-  el.addEventListener('dragstart',()=>{dragId=t.id;});
-  el.addEventListener('dragover',e=>{e.preventDefault();el.classList.add('dragover');});
-  el.addEventListener('dragleave',()=>el.classList.remove('dragover'));
-  el.addEventListener('drop',e=>{e.preventDefault();el.classList.remove('dragover');reorder(dragId,t.id);});
-  el.addEventListener('touchstart',()=>{dragId=t.id;},{passive:true});
-  el.addEventListener('touchend',e=>{const tg=document.elementFromPoint(e.changedTouches[0].clientX,e.changedTouches[0].clientY);const tt=tg&&tg.closest('.tile');if(tt&&tt.dataset.id!=dragId)reorder(dragId,+tt.dataset.id);});
-}
-function reorder(fromId,toId){
-  const h=state.myHand;const fi=h.findIndex(t=>t.id==fromId),ti=h.findIndex(t=>t.id==toId);
-  if(fi<0||ti<0)return;const[m]=h.splice(fi,1);h.splice(ti,0,m);render();
-}
-function showOver(winner,pot,scores,byOkey,fromHand){
-  $('over').classList.add('show');
-  $('overTitle').textContent=winner===me.id?'Kazandin!':'El Bitti';
-  const list=$('scoreList');list.innerHTML='';
-  state.players.forEach(p=>{const sc=scores[p.playerId];const row=document.createElement('div');row.className='score-row'+(p.playerId===winner?' win':'');const cls=sc<0?'neg':'pos';row.innerHTML='<span>'+p.name+(p.playerId===winner?' (1)':'')+'</span><span class="pts '+cls+'">'+(sc>0?'+':'')+sc+'</span>';list.appendChild(row);});
-  let sub=byOkey?'(Okeyle bitis)':fromHand?'(Elden bitis)':'';
-  if(sub){const s=document.createElement('div');s.style.cssText='color:var(--gold);font-size:13px';s.textContent=sub;list.appendChild(s);}
-}
-</script>
+
+    <nav id="topNav">
+        <button onclick="switchTab('apk-donustur', 0)" class="tab-btn active">📦 APK Dönüştür</button>
+        <button onclick="switchTab('admob-entegre', 1)" class="tab-btn">📣 AdMob Entegre</button>
+        <button onclick="switchTab('link-ekle', 2)" class="tab-btn">🔗 Link Ekle</button>
+        <button onclick="switchTab('platform-sec', 3)" class="tab-btn">🚀 Platform</button>
+    </nav>
+
+    <main>
+
+        <div id="apk-donustur" class="tab-content active">
+            <div class="section-title">UYGULAMA BİLGİLERİ</div>
+            
+            <div class="upload-zone">
+                <i class="fa-solid fa-folder-open"></i>
+                <div style="font-size: 12px; color: #9ca3af;">APK / AAB dosyası seç</div>
+            </div>
+
+            <div class="form-group">
+                <label>Uygulama Adı *</label>
+                <input type="text" id="appName" placeholder="Örn: Harika Uygulama" oninput="syncFields()" class="input-control">
+            </div>
+
+            <div class="form-group">
+                <label>Paket Adı</label>
+                <input type="text" id="packName" placeholder="com.sirket.uygulama" oninput="syncFields()" class="input-control">
+            </div>
+
+            <div class="form-group">
+                <label>Uygulama İkonu</label>
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <div style="width: 55px; height: 55px; background-color: var(--bg-card); border: 1px solid var(--border-color); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #4b5563;">
+                        <i class="fa-regular fa-image" style="font-size: 18px;"></i>
+                    </div>
+                    <span style="font-size: 10px; color: var(--text-muted);">PNG/JPG, 512×512 px önerilir</span>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <i class="fa-solid fa-circle-info" style="margin-top: 2px;"></i>
+                <p>APK dosyanız analiz edilerek bilgiler otomatik çıkarılır. İkon ve paket adı opsiyoneldir.</p>
+            </div>
+        </div>
+
+        <div id="admob-entegre" class="tab-content">
+            <div class="section-title">ADMOB ENTEGRASYONU</div>
+            
+            <div class="form-group">
+                <label>AdMob App ID</label>
+                <input type="text" placeholder="ca-app-pub-XXXXXXXXXXXXXXXX~XXXXXXXXXX" class="input-control">
+            </div>
+
+            <div class="section-title">REKLAM TİPLERİ</div>
+
+            <div class="ad-row" onclick="toggleCheckbox('bannerCheck')">
+                <div class="ad-info">
+                    <i class="fa-solid fa-rectangle-ad" style="color: #9ca3af;"></i>
+                    <div>
+                        <div style="font-size: 12px; color: white;">Banner Reklam</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">Sayfanın alt/üstünde sabit reklam</div>
+                    </div>
+                </div>
+                <input type="checkbox" id="bannerCheck" name="admob" value="Banner" onchange="syncFields()" onclick="event.stopPropagation()">
+            </div>
+
+            <div class="ad-row" onclick="toggleCheckbox('interCheck')">
+                <div class="ad-info">
+                    <i class="fa-solid fa-square-poll-horizontal" style="color: #9ca3af;"></i>
+                    <div>
+                        <div style="font-size: 12px; color: white;">Geçiş Reklamı</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">Tam ekran araya giren reklam</div>
+                    </div>
+                </div>
+                <input type="checkbox" id="interCheck" name="admob" value="Geçiş" onchange="syncFields()" onclick="event.stopPropagation()">
+            </div>
+
+            <div class="ad-row" onclick="toggleCheckbox('rewardCheck')">
+                <div class="ad-info">
+                    <i class="fa-solid fa-gift" style="color: #f59e0b;"></i>
+                    <div>
+                        <div style="font-size: 12px; color: white;">Ödüllü Reklam</div>
+                        <div style="font-size: 10px; color: var(--text-muted);">İzleyene ödül veren video reklam</div>
+                    </div>
+                </div>
+                <input type="checkbox" id="rewardCheck" name="admob" value="Ödüllü" onchange="syncFields()" onclick="event.stopPropagation()">
+            </div>
+
+            <div class="info-box">
+                <i class="fa-solid fa-circle-info" style="margin-top: 2px;"></i>
+                <p>AdMob entegrasyonu AndroidManifest.xml ve build.gradle dosyalarına otomatik eklenir.</p>
+            </div>
+        </div>
+
+        <div id="link-ekle" class="tab-content">
+            <div class="section-title">UYGULAMA LİNKLERİ</div>
+            
+            <div style="background-color: var(--bg-card); border: 1px solid var(--border-color); padding: 12px; border-radius: 12px;">
+                <div style="font-size: 10px; color: var(--text-muted); font-weight: bold; margin-bottom: 8px;">LİNK #1</div>
+                <select class="input-control" style="margin-bottom: 8px; font-size: 12px;">
+                    <option>🌐 Web Linki</option>
+                    <option>🔒 Gizlilik Politikası</option>
+                </select>
+                <input type="text" placeholder="Etiket (örn: Gizlilik Politikası)" class="input-control" style="margin-bottom: 8px;">
+                <input type="text" placeholder="https://..." class="input-control">
+            </div>
+
+            <div class="info-box">
+                <i class="fa-solid fa-circle-info" style="margin-top: 2px;"></i>
+                <p>Deep linker ve App linker AndroidManifest intent-filter ve Apple-App-Site-Association dosyalarına otomatik eklenir.</p>
+            </div>
+        </div>
+
+        <div id="platform-sec" class="tab-content">
+            <div class="section-title">PLATFORM & DERLEME</div>
+            
+            <div class="platform-grid">
+                <div id="p-android" onclick="selectPlatform('Android')" class="plat-card active">
+                    <i class="fa-brands fa-android" style="color: var(--emerald); font-size: 20px;"></i>
+                    <div style="font-size: 11px; color: white; font-weight: bold; margin-top: 4px;">Android</div>
+                    <div style="font-size: 8px; color: var(--text-muted);">APK / AAB</div>
+                </div>
+                <div id="p-ios" onclick="selectPlatform('iOS')" class="plat-card">
+                    <i class="fa-brands fa-apple" style="color: white; font-size: 20px;"></i>
+                    <div style="font-size: 11px; color: white; font-weight: bold; margin-top: 4px;">iOS</div>
+                    <div style="font-size: 8px; color: var(--text-muted);">IPA</div>
+                </div>
+                <div id="p-both" onclick="selectPlatform('Her İkisi')" class="plat-card">
+                    <i class="fa-solid fa-bolt" style="color: #f59e0b; font-size: 20px;"></i>
+                    <div style="font-size: 11px; color: white; font-weight: bold; margin-top: 4px;">Her İkisi</div>
+                    <div style="font-size: 8px; color: var(--text-muted);">Düal Derleme</div>
+                </div>
+            </div>
+
+            <div class="summary-box">
+                <div style="font-size: 10px; color: var(--text-muted); font-weight: bold; margin-bottom: 10px;">BUILD ÖZETİ</div>
+                
+                <div class="summary-row">
+                    <span style="color: var(--text-muted);">Uygulama</span>
+                    <span id="sumName">-</span>
+                </div>
+                <div class="summary-row">
+                    <span style="color: var(--text-muted);">Paket</span>
+                    <span id="sumPack">-</span>
+                </div>
+                <div class="summary-row">
+                    <span style="color: var(--text-muted);">AdMob</span>
+                    <span id="sumAdmob" style="color: #ef4444; font-weight: bold;">Yok</span>
+                </div>
+                <div class="summary-row">
+                    <span style="color: var(--text-muted);">Linkler</span>
+                    <span>1 adet</span>
+                </div>
+                <div class="summary-row" style="border: none;">
+                    <span style="color: var(--text-muted);">Platform</span>
+                    <span id="sumPlatform" style="color: var(--sky-blue); font-weight: bold;">Android</span>
+                </div>
+            </div>
+
+            <button onclick="processBuild()" class="btn-primary">
+                <i class="fa-solid fa-rocket"></i> DERLE & OLUŞTUR
+            </button>
+
+            <div id="warningPanel" class="btn-warning">
+                <i class="fa-solid fa-triangle-exclamation"></i> Devam etmek için uygulama adı gerekli (Sekme 1)
+            </div>
+        </div>
+
+    </main>
+
+    <footer>
+        <button onclick="switchTab('apk-donustur', 0)" class="foot-btn" style="color: var(--sky-blue);"><i class="fa-solid fa-box"></i><span>Dosya</span></button>
+        <button onclick="switchTab('admob-entegre', 1)" class="foot-btn"><i class="fa-solid fa-bullhorn"></i><span>AdMob</span></button>
+        <button onclick="switchTab('link-ekle', 2)" class="foot-btn"><i class="fa-solid fa-link"></i><span>Bağlantı</span></button>
+        <button onclick="switchTab('platform-sec', 3)" class="foot-btn"><i class="fa-solid fa-paper-plane"></i><span>Derle</span></button>
+    </footer>
+
+    <script>
+        let chosenPlatform = "Android";
+
+        // SEKME GEÇİŞ SİSTEMİ
+        function switchTab(tabId, index) {
+            // Tüm içerik pencerelerini kapat
+            var contents = document.getElementsByClassName('tab-content');
+            for (var i = 0; i < contents.length; i++) {
+                contents[i].classList.remove('active');
+            }
+            // İlgili sekmeyi aç
+            document.getElementById(tabId).classList.add('active');
+
+            // Üst menü buton renklerini güncelle
+            var topBtns = document.getElementById('topNav').getElementsByClassName('tab-btn');
+            for (var j = 0; j < topBtns.length; j++) {
+                topBtns[j].classList.remove('active');
+            }
+            topBtns[index].classList.add('active');
+
+            // Alt menü ikon renklerini eşitle
+            var footBtns = document.getElementsByClassName('foot-btn');
+            for (var k = 0; k < footBtns.length; k++) {
+                footBtns[k].style.color = 'var(--text-muted)';
+            }
+            footBtns[index].style.color = 'var(--sky-blue)';
+        }
+
+        // SATIRA TIKLANDIĞINDA CHECKBOX'I SEÇME
+        function toggleCheckbox(checkId) {
+            var box = document.getElementById(checkId);
+            box.checked = !box.checked;
+            syncFields(); // Değişiklikleri kaydet
+        }
+
+        // PLATFORM SEÇİMİ
+        function selectPlatform(platName) {
+            chosenPlatform = platName;
+            document.getElementById('p-android').classList.remove('active');
+            document.getElementById('p-ios').classList.remove('active');
+            document.getElementById('p-both').classList.remove('active');
+
+            if(platName === 'Android') document.getElementById('p-android').classList.add('active');
+            if(platName === 'iOS') document.getElementById('p-ios').classList.add('active');
+            if(platName === 'Her İkisi') document.getElementById('p-both').classList.add('active');
+
+            document.getElementById('sumPlatform').innerText = platName;
+        }
+
+        // TÜM ALANLARI CANLI EŞİTLEME VE HATA KONTROLÜ
+        function syncFields() {
+            var nameValue = document.getElementById('appName').value.trim();
+            var packValue = document.getElementById('packName').value.trim();
+
+            // İsim ve Paket Bilgisi Özet Paneli
+            document.getElementById('sumName').innerText = nameValue ? nameValue : '-';
+            document.getElementById('sumPack').innerText = packValue ? packValue : '-';
+
+            // AdMob Seçim Kontrolü
+            var checkedBoxes = document.querySelectorAll('input[name="admob"]:checked');
+            var admobSummary = document.getElementById('sumAdmob');
+            
+            if (checkedBoxes.length > 0) {
+                var selectedTypes = [];
+                for(var i=0; i<checkedBoxes.length; i++) {
+                    selectedTypes.push(checkedBoxes[i].value);
+                }
+                admobSummary.innerText = selectedTypes.join(' + ');
+                admobSummary.style.color = 'var(--emerald)';
+            } else {
+                admobSummary.innerText = "Yok";
+                admobSummary.style.color = '#ef4444';
+            }
+
+            // Hata Uyarı Paneli Görünürlüğü
+            var warnPanel = document.getElementById('warningPanel');
+            if (nameValue !== "") {
+                warnPanel.style.display = 'none';
+            } else {
+                warnPanel.style.display = 'flex';
+            }
+        }
+
+        // PROJEYİ DERLEME TETİKLEYİCİSİ
+        function processBuild() {
+            var nameValue = document.getElementById('appName').value.trim();
+            if (!nameValue) {
+                alert("Hata: Uygulama adı girmeden derleme yapılamaz! Lütfen 'APK Dönüştür' sekmesine dönüp isim yazın.");
+                switchTab('apk-donustur', 0); // Kullanıcıyı eksik yere fırlat
+                return;
+            }
+            alert("🚀 Yapılandırma Başarılı!\nSeçilen Platform: " + chosenPlatform + "\nUygulamanız paketleniyor, indirme işlemi birazdan başlayacak.");
+        }
+    </script>
 </body>
 </html>
