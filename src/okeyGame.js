@@ -33,7 +33,6 @@ export function isOkeyTile(t,okey){
   if(t.fake)return true;
   return t.color===okey.color&&t.num===okey.num;
 }
-PARCAcat >> src/okeyGame.js << 'PARCA'
 function validateGroup(tiles,okey){
   if(tiles.length<3||tiles.length>4)return false;
   const reals=tiles.filter(t=>!isOkeyTile(t,okey));
@@ -61,7 +60,6 @@ function validateRun(tiles,okey){
 export function validateSet(tiles,okey){
   return validateGroup(tiles,okey)||validateRun(tiles,okey);
 }
-PARCAcat >> src/okeyGame.js << 'PARCA'
 export function setValue(tiles,okey){
   const reals=tiles.filter(t=>!isOkeyTile(t,okey));
   if(reals.length===0)return 0;
