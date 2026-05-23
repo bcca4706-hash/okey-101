@@ -263,6 +263,19 @@
 </div>
 
 <script>
+// === GECICI HATA YAKALAYICI ===
+window.onerror = function(msg, src, line, col, err){
+  let box = document.getElementById('errbox');
+  if(!box){
+    box = document.createElement('div');
+    box.id = 'errbox';
+    box.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#c0392b;color:#fff;padding:12px;font-size:13px;z-index:99999;font-family:monospace;white-space:pre-wrap';
+    document.body.appendChild(box);
+  }
+  box.textContent = 'HATA: '+msg+'\nSatir: '+line+':'+col;
+  return false;
+};
+// === ===
 // ============================================================
 //  101 OKEY ONLINE - İSTEMCİ
 //  Backend olaylarına birebir uyumlu. Oyun mantığı sunucuda.
