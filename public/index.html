@@ -187,7 +187,7 @@
       <label>Sunucu adresi</label>
       <input id="serverInput" placeholder="https://senin-url.up.railway.app" autocomplete="off">
     </div>
-    <button class="btn btn-gold" id="loginBtn">Giriş Yap</button>
+    <button class="btn btn-gold" id="loginBtn" onclick="doLogin()">Giriş Yap</button>
   </div>
 
   <div class="card hidden" id="menuCard">
@@ -263,19 +263,6 @@
 </div>
 
 <script>
-// === GECICI HATA YAKALAYICI ===
-window.onerror = function(msg, src, line, col, err){
-  let box = document.getElementById('errbox');
-  if(!box){
-    box = document.createElement('div');
-    box.id = 'errbox';
-    box.style.cssText = 'position:fixed;top:0;left:0;right:0;background:#c0392b;color:#fff;padding:12px;font-size:13px;z-index:99999;font-family:monospace;white-space:pre-wrap';
-    document.body.appendChild(box);
-  }
-  box.textContent = 'HATA: '+msg+'\nSatir: '+line+':'+col;
-  return false;
-};
-// === ===
 // ============================================================
 //  101 OKEY ONLINE - İSTEMCİ
 //  Backend olaylarına birebir uyumlu. Oyun mantığı sunucuda.
@@ -290,7 +277,8 @@ let selectedTileId=null, server='';
 let savedId=null, savedName=null;
 
 // ---------- GİRİŞ ----------
-$('loginBtn').onclick = async () => {
+async function doLogin(){
+  alert('Buton calisti! Giris deneniyor...');
   const name = $('nameInput').value.trim() || 'Oyuncu';
   server = $('serverInput').value.trim().replace(/\/$/,'');
   if(!server){ toast('Sunucu adresi gir'); return; }
@@ -305,7 +293,7 @@ $('loginBtn').onclick = async () => {
     showMenu();
     connectSocket(data.token);
   }catch(e){ toast('Bağlanamadı: '+e.message); }
-};
+}
 
 function showMenu(){
   $('loginCard').classList.add('hidden');
